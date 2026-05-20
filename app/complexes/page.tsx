@@ -1,8 +1,9 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ComplexCard } from '@/components/complexes/ComplexCard'
 import { ComplexSearch } from '@/components/complexes/ComplexSearch'
-import { MapPin } from 'lucide-react'
+import { MapPin, PlusCircle } from 'lucide-react'
 import type { Complex } from '@/types'
 
 export const metadata = { title: 'Browse Complexes' }
@@ -53,10 +54,19 @@ export default async function ComplexesPage({
         </div>
       </section>
 
-      {/* Search bar — overlaps hero bottom */}
+      {/* Search bar + submit link */}
       <div className="bg-zinc-50 border-b">
-        <div className="container mx-auto max-w-6xl px-4 py-4">
-          <ComplexSearch />
+        <div className="container mx-auto max-w-6xl px-4 py-4 flex items-center gap-4">
+          <div className="flex-1">
+            <ComplexSearch />
+          </div>
+          <Link
+            href="/complexes/submit"
+            className="shrink-0 flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Submit a Complex</span>
+          </Link>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Users, Building2, Star, MessageSquare } from 'lucide-react'
+import { Users, Building2, Star, MessageSquare, Inbox } from 'lucide-react'
 
 export const metadata = { title: 'Admin Dashboard' }
 
@@ -11,6 +11,7 @@ export default async function AdminDashboard() {
     { count: complexCount },
     { count: reviewCount },
     { count: contactCount },
+    { count: pendingSubmissions },
     { data: recentContacts },
     { data: recentReviews },
   ] = await Promise.all([
@@ -18,15 +19,17 @@ export default async function AdminDashboard() {
     supabase.from('complexes').select('*', { count: 'exact', head: true }),
     supabase.from('reviews').select('*', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
+    supabase.from('complex_submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('contact_messages').select('*').order('created_at', { ascending: false }).limit(5),
     supabase.from('reviews').select('*, profile:profiles(username), complex:complexes(name)').order('created_at', { ascending: false }).limit(5),
   ])
 
   const stats = [
-    { label: 'Total Users', value: userCount ?? 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Complexes', value: complexCount ?? 0, icon: Building2, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Reviews', value: reviewCount ?? 0, icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Contact Messages', value: contactCount ?? 0, icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Total Users',         value: userCount          ?? 0, icon: Users,         color: 'text-blue-600',   bg: 'bg-blue-50' },
+    { label: 'Complexes',           value: complexCount        ?? 0, icon: Building2,     color: 'text-green-600',  bg: 'bg-green-50' },
+    { label: 'Reviews',             value: reviewCount         ?? 0, icon: Star,          color: 'text-amber-600',  bg: 'bg-amber-50' },
+    { label: 'Contact Messages',    value: contactCount        ?? 0, icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Pending Submissions', value: pendingSubmissions  ?? 0, icon: Inbox,         color: 'text-orange-600', bg: 'bg-orange-50' },
   ]
 
   return (
@@ -34,7 +37,7 @@ export default async function AdminDashboard() {
       <h1 className="text-2xl font-bold tracking-wide uppercase mb-6">Dashboard</h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white rounded-xl border p-5 flex items-center gap-4">
             <div className={`h-11 w-11 rounded-xl ${bg} flex items-center justify-center shrink-0`}>

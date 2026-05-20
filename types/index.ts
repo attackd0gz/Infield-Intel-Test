@@ -77,6 +77,27 @@ export interface ReviewPhoto {
   created_at: string
 }
 
+export interface ComplexSubmission {
+  id: string
+  submitted_by: string | null
+  name: string
+  address: string
+  city: string
+  state: string
+  zip: string | null
+  phone: string | null
+  website: string | null
+  description: string | null
+  amenities: string[]
+  notes: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  admin_notes: string | null
+  reviewed_by: string | null
+  reviewed_at: string | null
+  created_at: string
+  profile?: { username: string; full_name: string | null } | null
+}
+
 export interface LeaderboardEntry {
   rank: number
   profile: Profile
