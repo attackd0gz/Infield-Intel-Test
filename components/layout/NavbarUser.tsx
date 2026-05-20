@@ -86,16 +86,16 @@ export function NavbarUser() {
           <p className="text-xs font-medium">{profile.points.toLocaleString()} pts</p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => window.location.href = `/profile/${profile.username}`}>
+        <DropdownMenuItem onSelect={() => router.push(`/profile/${profile.username}`)}>
           My Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => window.location.href = `/profile/edit`}>
+        <DropdownMenuItem onSelect={() => router.push('/profile/edit')}>
           Edit Profile
         </DropdownMenuItem>
         {profile.role === 'admin' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => window.location.href = `/admin`}>
+            <DropdownMenuItem onSelect={() => router.push('/admin')}>
               Admin Panel
             </DropdownMenuItem>
           </>
