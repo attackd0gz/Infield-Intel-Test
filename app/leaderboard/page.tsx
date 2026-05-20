@@ -24,6 +24,7 @@ export default async function LeaderboardPage() {
   const { data: profiles } = await supabase
     .from('profiles')
     .select('*')
+    .gt('points', 0)
     .order('points', { ascending: false })
     .limit(50)
 
@@ -154,7 +155,7 @@ function LeaderboardHero({ count }: { count: number }) {
         <Trophy className="h-8 w-8 text-amber-400 mx-auto mb-2" />
         <h1 className="text-4xl font-bold tracking-wide uppercase">Leaderboard</h1>
         <p className="text-white/70 mt-1 text-sm">
-          {count > 0 ? `Top ${count} reviewers — ranked by points` : 'Be the first to earn points'}
+          {count > 0 ? `Top ${count} reviewer${count === 1 ? '' : 's'} — ranked by points` : 'Be the first to earn points'}
         </p>
       </div>
     </section>

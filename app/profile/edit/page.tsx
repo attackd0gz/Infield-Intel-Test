@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EditProfileForm } from '@/components/profile/EditProfileForm'
+import { DeleteAccountButton } from '@/components/profile/DeleteAccountButton'
 import type { Profile } from '@/types'
 
 export const metadata = { title: 'Edit Profile' }
@@ -25,7 +26,17 @@ export default async function EditProfilePage() {
         <h1 className="text-3xl font-bold tracking-wide uppercase">Edit Profile</h1>
         <p className="text-muted-foreground text-sm mt-1">Update your public profile information.</p>
       </div>
+
       <EditProfileForm profile={profile as Profile} />
+
+      {/* Danger Zone */}
+      <div className="mt-16 border border-destructive/30 rounded-xl p-6">
+        <h2 className="text-base font-semibold text-destructive mb-1">Danger Zone</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Permanently delete your account and all associated data. This action cannot be undone.
+        </p>
+        <DeleteAccountButton />
+      </div>
     </div>
   )
 }

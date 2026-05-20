@@ -9,15 +9,15 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { LogoIcon } from '@/components/ui/LogoIcon'
 import {
-  Menu, Search, Map, Trophy, User, Pencil,
+  Menu, X, Search, Map, Trophy, User, Pencil,
   ShieldCheck, LogOut, LogIn, UserPlus, Star,
 } from 'lucide-react'
 import type { Profile } from '@/types'
 
 const NAV_LINKS = [
-  { href: '/complexes', label: 'Browse Complexes', icon: Search },
-  { href: '/map',       label: 'Map',              icon: Map    },
-  { href: '/leaderboard', label: 'Leaderboard',    icon: Trophy },
+  { href: '/complexes',   label: 'Browse Complexes', icon: Search },
+  { href: '/map',         label: 'Map',              icon: Map    },
+  { href: '/leaderboard', label: 'Leaderboard',      icon: Trophy },
 ]
 
 export function MobileMenu() {
@@ -66,26 +66,57 @@ export function MobileMenu() {
     router.push(href)
   }
 
+  function isActive(href: string) {
+    if (href === '/') return pathname === '/'
+    return pathname.startsWith(href)
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg text-white hover:bg-white/10 transition-colors" aria-label="Open menu">
+      <SheetTrigger
+        className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg text-white hover:bg-white/10 transition-colors"
+        aria-label="Open menu"
+      >
         <Menu className="h-5 w-5" />
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-72 p-0 bg-zinc-900 border-white/10 flex flex-col">
+      <SheetContent side="right" showCloseButton={false} className="w-72 p-0 bg-zinc-900 border-white/10 flex flex-col">
 
-        {/* Header */}
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/10">
-          <LogoIcon size={32} />
-          <span
-            className="text-white text-base font-bold tracking-widest uppercase"
-            style={{ fontFamily: 'var(--font-oswald), sans-serif' }}
+        {/* Header with explicit close button */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+          <Link
+            href="/"
+            className="flex items-center gap-2"
+            onClick={() => setOpen(false)}
           >
-            Infield <span className="text-amber-400">Intel</span>
-          </span>
+            <LogoIcon size={28} />
+            <span
+              className="text-white text-sm font-bold tracking-widest uppercase"
+              style={{ fontFamily: 'var(--font-oswald), sans-serif' }}
+            >
+              Infield <span className="text-amber-400">Intel</span>
+            </span>
+          </Link>
+          <button
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-center h-8 w-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
-        {/* User card */}
+        {/* User card — show skeleton while loading so height is stable */}
+        {loading && (
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+            <div className="h-10 w-10 rounded-full bg-white/10 shrink-0 animate-pulse" />
+            <div className="space-y-1.5 flex-1">
+              <div className="h-3 w-28 rounded bg-white/10 animate-pulse" />
+              <div className="h-2.5 w-20 rounded bg-white/10 animate-pulse" />
+            </div>
+          </div>
+        )}
+
         {!loading && profile && (
           <div
             className="flex items-center gap-3 px-5 py-4 border-b border-white/10 cursor-pointer hover:bg-white/5 transition-colors"
@@ -110,10 +141,7 @@ export function MobileMenu() {
 
         {!loading && !profile && (
           <div className="flex flex-col gap-2 px-5 py-4 border-b border-white/10">
-            <Button
-              className="w-full"
-              onClick={() => go('/login')}
-            >
+            <Button className="w-full" onClick={() => go('/login')}>
               <LogIn className="h-4 w-4 mr-2" />
               Log in
             </Button>
@@ -137,10 +165,17 @@ export function MobileMenu() {
             <button
               key={href}
               onClick={() => go(href)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left w-full"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left w-full ${
+                isActive(href)
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className={`h-4 w-4 shrink-0 ${isActive(href) ? 'text-amber-400' : ''}`} />
               {label}
+              {isActive(href) && (
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-amber-400" />
+              )}
             </button>
           ))}
         </nav>
@@ -153,16 +188,24 @@ export function MobileMenu() {
             </p>
             <button
               onClick={() => go(`/profile/${profile.username}`)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left w-full"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left w-full ${
+                isActive(`/profile/${profile.username}`)
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
             >
-              <User className="h-4 w-4 shrink-0" />
+              <User className={`h-4 w-4 shrink-0 ${isActive(`/profile/${profile.username}`) ? 'text-amber-400' : ''}`} />
               My Profile
             </button>
             <button
               onClick={() => go('/profile/edit')}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors text-left w-full"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left w-full ${
+                isActive('/profile/edit')
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
             >
-              <Pencil className="h-4 w-4 shrink-0" />
+              <Pencil className={`h-4 w-4 shrink-0 ${isActive('/profile/edit') ? 'text-amber-400' : ''}`} />
               Edit Profile
             </button>
             <button
@@ -175,7 +218,11 @@ export function MobileMenu() {
             {profile.role === 'admin' && (
               <button
                 onClick={() => go('/admin')}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-amber-400/80 hover:text-amber-400 hover:bg-amber-400/10 transition-colors text-left w-full"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left w-full ${
+                  isActive('/admin')
+                    ? 'bg-amber-400/10 text-amber-400'
+                    : 'text-amber-400/80 hover:text-amber-400 hover:bg-amber-400/10'
+                }`}
               >
                 <ShieldCheck className="h-4 w-4 shrink-0" />
                 Admin Panel

@@ -131,12 +131,13 @@ export default async function OwnerDashboardPage({ params }: { params: Promise<{
                           <Badge variant="outline" className="capitalize text-xs">{a.announcement_type}</Badge>
                           <span className="text-xs text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</span>
                         </div>
-                        <form action={`/api/owner/delete-announcement`} method="POST">
+                        <form action="/api/owner/delete-announcement" method="POST">
                           <input type="hidden" name="id" value={a.id} />
+                          <input type="hidden" name="complexId" value={complexId} />
                           <button
-                            formAction={`/api/owner/delete-announcement?id=${a.id}`}
+                            type="submit"
                             className="text-muted-foreground hover:text-red-600 transition-colors"
-                            title="Delete"
+                            title="Delete announcement"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>

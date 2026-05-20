@@ -32,10 +32,15 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const protectedPaths = ['/profile']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
+  const pathname = request.nextUrl.pathname
 
-  if (isProtected && !user) {
+  // Redirect unauthenticated users away from protected routes.
+  // Role checks (admin, owner) are enforced inside each page/layout
+  // via server-side redirect() calls — keeping middleware lightweight.
+  const authRequired = ['/profile', '/admin', '/owner']
+  const needsAuth = authRequired.some(p => pathname.startsWith(p))
+
+  if (needsAuth && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
