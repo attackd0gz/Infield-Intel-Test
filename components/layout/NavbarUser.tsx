@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -58,12 +57,8 @@ export function NavbarUser() {
   if (!profile) {
     return (
       <div className="flex items-center gap-2">
-        <Link href="/login">
-          <Button variant="ghost">Log in</Button>
-        </Link>
-        <Link href="/signup">
-          <Button>Sign up</Button>
-        </Link>
+        <Button variant="ghost" onClick={() => router.push('/login')}>Log in</Button>
+        <Button onClick={() => router.push('/signup')}>Sign up</Button>
       </div>
     )
   }
