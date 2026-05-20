@@ -6,6 +6,7 @@ export interface AmenityQuestion {
 }
 
 export const AMENITY_QUESTIONS: AmenityQuestion[] = [
+  // ── Facilities ──────────────────────────────────────────────────────────────
   {
     key: 'fan_seating',
     label: 'Fan Seating',
@@ -33,23 +34,70 @@ export const AMENITY_QUESTIONS: AmenityQuestion[] = [
     hasOther: true,
   },
   {
+    key: 'lighting',
+    label: 'Lighting (Night Games)',
+    options: ['Full', 'Partial', 'None', 'N/A'],
+  },
+
+  // ── Fields ──────────────────────────────────────────────────────────────────
+  {
+    key: 'field_surface',
+    label: 'Field Surface',
+    options: ['Grass', 'Turf', 'Mixed (Turf & Grass)'],
+  },
+  {
     key: 'field_conditions',
     label: 'Field Conditions',
     options: ['Excellent', 'Good', 'Fair', 'Poor', 'Other'],
     hasOther: true,
   },
   {
-    key: 'lighting',
-    label: 'Lighting (Night Games)',
-    options: ['Full', 'Partial', 'None', 'N/A'],
+    key: 'mound_conditions',
+    label: 'Mound Conditions',
+    options: ['Game Ready', 'Good', 'Fair', 'Poor', 'Portable', 'N/A'],
+  },
+
+  // ── Player facilities ────────────────────────────────────────────────────────
+  {
+    key: 'dugout_conditions',
+    label: 'Dugout Conditions',
+    options: ['Excellent', 'Good', 'Fair', 'Poor', 'Open Benches', 'None'],
+  },
+  {
+    key: 'bullpen',
+    label: 'Bullpen',
+    options: ['Full Bullpen', 'Limited', 'Portable Mounds Only', 'None'],
+  },
+  {
+    key: 'batting_cages',
+    label: 'Batting Cages',
+    options: ['10+', '6–10', '3–5', '1–2', 'None'],
   },
 ]
 
 /** Returns a Tailwind color class for a given amenity value. */
 export function amenityValueColor(value: string): string {
-  const positive = new Set(['Yes', 'Clean', 'Excellent', 'Good', 'Plenty', 'Full'])
-  const neutral  = new Set(['Limited', 'Adequate', 'Partial', 'Fair', 'Other', 'N/A', 'Street Only'])
-  const negative = new Set(['No', 'Poor', 'None'])
+  const positive = new Set([
+    // General
+    'Yes', 'Clean', 'Excellent', 'Good', 'Plenty', 'Full',
+    // Field / facilities
+    'Game Ready', 'Full Bullpen',
+    // Batting cages (more = better)
+    '10+', '6–10',
+  ])
+  const neutral = new Set([
+    // General
+    'Limited', 'Adequate', 'Partial', 'Fair', 'Other', 'N/A', 'Street Only',
+    // Field
+    'Grass', 'Turf', 'Mixed (Turf & Grass)', 'Portable',
+    // Player facilities
+    'Open Benches', 'Portable Mounds Only',
+    // Batting cages
+    '3–5', '1–2',
+  ])
+  const negative = new Set([
+    'No', 'Poor', 'None',
+  ])
 
   if (positive.has(value)) return 'bg-green-50 text-green-700 border-green-200'
   if (negative.has(value)) return 'bg-red-50   text-red-700   border-red-200'
