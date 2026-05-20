@@ -9,6 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { Complex } from '@/types'
 
+// Default center: continental US
+const US_CENTER = { lat: 39.5, lng: -98.35 }
+const US_ZOOM = 4
+
 interface Props {
   complexes: Complex[]
 }
@@ -17,50 +21,70 @@ export function MapView({ complexes }: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [selected, setSelected] = useState<Complex | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!mapRef.current || complexes.length === 0) return
+    if (!mapRef.current) return
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-    if (!apiKey) return
+    if (!apiKey) {
+      setError('Google Maps API key is not configured.')
+      return
+    }
 
     setOptions({ key: apiKey })
 
     async function initMap() {
-      const { Map } = await importLibrary('maps') as google.maps.MapsLibrary
-      const { AdvancedMarkerElement } = await importLibrary('marker') as google.maps.MarkerLibrary
+      try {
+        const { Map } = await importLibrary('maps') as google.maps.MapsLibrary
 
-      const bounds = new google.maps.LatLngBounds()
-      complexes.forEach(c => bounds.extend({ lat: c.lat, lng: c.lng }))
+        // Only plot complexes with real coordinates (not the 0,0 default)
+        const valid = complexes.filter(c => c.lat !== 0 || c.lng !== 0)
 
-      const map = new Map(mapRef.current!, {
-        mapId: 'infield-intel-map',
-        center: bounds.getCenter(),
-        zoom: 11,
-        streetViewControl: false,
-        mapTypeControl: false,
-      })
-
-      map.fitBounds(bounds, 40)
-
-      complexes.forEach((complex) => {
-        const pin = document.createElement('div')
-        pin.className = 'bg-green-700 text-white text-xs font-bold px-2 py-1 rounded-full shadow cursor-pointer whitespace-nowrap'
-        pin.textContent = complex.average_rating > 0
-          ? `⚾ ${complex.average_rating.toFixed(1)}`
-          : '⚾'
-
-        const marker = new AdvancedMarkerElement({
-          map,
-          position: { lat: complex.lat, lng: complex.lng },
-          title: complex.name,
-          content: pin,
+        const map = new Map(mapRef.current!, {
+          center: US_CENTER,
+          zoom: US_ZOOM,
+          streetViewControl: false,
+          mapTypeControl: false,
         })
 
-        marker.addListener('click', () => setSelected(complex))
-      })
+        if (valid.length > 0) {
+          const bounds = new google.maps.LatLngBounds()
+          valid.forEach(c => bounds.extend({ lat: c.lat, lng: c.lng }))
+          map.fitBounds(bounds, 60)
+        }
 
-      setMapLoaded(true)
+        valid.forEach((complex) => {
+          const marker = new google.maps.Marker({
+            map,
+            position: { lat: complex.lat, lng: complex.lng },
+            title: complex.name,
+            label: {
+              text: complex.average_rating > 0
+                ? `⚾ ${complex.average_rating.toFixed(1)}`
+                : '⚾',
+              color: '#fff',
+              fontSize: '11px',
+              fontWeight: 'bold',
+            },
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 18,
+              fillColor: '#15803d',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            },
+          })
+
+          marker.addListener('click', () => setSelected(complex))
+        })
+
+        setMapLoaded(true)
+      } catch (err) {
+        console.error('Map init error:', err)
+        setError('Failed to load map. Check the browser console for details.')
+      }
     }
 
     initMap()
@@ -70,9 +94,15 @@ export function MapView({ complexes }: Props) {
     <div className="relative w-full h-full">
       <div ref={mapRef} className="w-full h-full" />
 
-      {!mapLoaded && (
+      {!mapLoaded && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <p className="text-muted-foreground">Loading map...</p>
+          <p className="text-muted-foreground">Loading map…</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <p className="text-destructive text-sm">{error}</p>
         </div>
       )}
 

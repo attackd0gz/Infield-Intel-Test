@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     website: string
     description: string
     amenities: string[]
+    cover_photo_url: string | null
   }
 
   const { complexId, ...fields } = body
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
         website: fields.website || null,
         description: fields.description || null,
         amenities: fields.amenities ?? [],
+        cover_photo_url: fields.cover_photo_url ?? null,
       })
       .eq('id', complexId)
 
@@ -69,6 +71,7 @@ export async function POST(request: Request) {
         website: fields.website || null,
         description: fields.description || null,
         amenities: fields.amenities ?? [],
+        cover_photo_url: fields.cover_photo_url ?? null,
         lat: 0,
         lng: 0,
       })
