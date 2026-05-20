@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Star, Image as ImageIcon, ThumbsUp, Trophy } from 'lucide-react'
+import { Star, Image as ImageIcon, ThumbsUp, Trophy, Pencil } from 'lucide-react'
 import { BADGE_THRESHOLDS } from '@/types'
 import type { BadgeLevel, Profile, Review } from '@/types'
 
@@ -21,6 +22,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const { username } = await params
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
@@ -36,6 +39,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     .order('created_at', { ascending: false })
 
   const p = profile as Profile
+  const isOwnProfile = user?.id === p.id
   const currentBadgeIndex = BADGE_ORDER.indexOf(p.badge_level)
   const nextBadge = BADGE_ORDER[currentBadgeIndex + 1] as BadgeLevel | undefined
   const nextThreshold = nextBadge ? BADGE_THRESHOLDS[nextBadge] : null
@@ -52,7 +56,18 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 text-center sm:text-left">
-          <h1 className="text-2xl font-bold">{p.full_name ?? p.username}</h1>
+          <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
+            <h1 className="text-2xl font-bold">{p.full_name ?? p.username}</h1>
+            {isOwnProfile && (
+              <Link
+                href="/profile/edit"
+                className="h-8 w-8 rounded-lg border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+                title="Edit profile"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Link>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm mb-2">@{p.username}</p>
           <Badge className="mb-3">{p.badge_level}</Badge>
           {p.bio && <p className="text-sm text-muted-foreground">{p.bio}</p>}
