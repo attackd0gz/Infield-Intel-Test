@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { MapPin, Phone, Globe, Star } from 'lucide-react'
 import { ReviewList } from '@/components/reviews/ReviewList'
 import { WriteReviewButton } from '@/components/reviews/WriteReviewButton'
+import { ClaimButton } from '@/components/complexes/ClaimButton'
 import type { Complex } from '@/types'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -74,7 +75,15 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
               <span className="text-muted-foreground text-sm">({c.review_count} {c.review_count === 1 ? 'review' : 'reviews'})</span>
             </div>
           </div>
-          <WriteReviewButton complexId={c.id} userId={user?.id ?? null} existingReview={reviews?.find(r => r.user_id === user?.id) ?? null} />
+          <div className="flex items-center gap-2">
+            <ClaimButton
+              complexId={c.id}
+              complexName={c.name}
+              ownerId={c.owner_id}
+              currentUserId={user?.id ?? null}
+            />
+            <WriteReviewButton complexId={c.id} userId={user?.id ?? null} existingReview={reviews?.find(r => r.user_id === user?.id) ?? null} />
+          </div>
         </div>
       </div>
 
