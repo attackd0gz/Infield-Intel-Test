@@ -134,7 +134,12 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
               currentUserId={user?.id ?? null}
               hasPendingClaim={existingClaim?.status === 'pending'}
             />
-            <WriteReviewButton complexId={c.id} userId={user?.id ?? null} existingReview={reviews?.find(r => r.user_id === user?.id) ?? null} />
+            <WriteReviewButton
+              complexId={c.id}
+              userId={user?.id ?? null}
+              existingReview={reviews?.find(r => r.user_id === user?.id) ?? null}
+              isFirstReview={c.review_count === 0}
+            />
           </div>
         </div>
       </div>
