@@ -37,7 +37,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect unauthenticated users away from protected routes.
   // Role checks (admin, owner) are enforced inside each page/layout
   // via server-side redirect() calls — keeping middleware lightweight.
-  const authRequired = ['/profile', '/admin', '/owner']
+  const authRequired = ['/profile', '/admin', '/owner', '/complexes', '/map', '/leaderboard']
   const needsAuth = authRequired.some(p => pathname.startsWith(p))
 
   if (needsAuth && !user) {
