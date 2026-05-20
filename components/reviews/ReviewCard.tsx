@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
+import { amenityLabel, amenityValueColor } from '@/lib/amenities'
 import type { Review } from '@/types'
 
 interface Props {
@@ -111,6 +112,26 @@ export function ReviewCard({ review, currentUserId, initialVoted = false }: Prop
       <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed mb-3">
         {review.body}
       </p>
+
+      {/* Amenity ratings */}
+      {review.amenity_ratings && Object.keys(review.amenity_ratings).length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {Object.entries(review.amenity_ratings).map(([key, entry]) => {
+            if (!entry?.value) return null
+            return (
+              <span
+                key={key}
+                title={entry.comment ? `${amenityLabel(key)}: ${entry.value} — ${entry.comment}` : undefined}
+                className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border ${amenityValueColor(entry.value)}`}
+              >
+                <span className="text-[10px] opacity-60">{amenityLabel(key)}:</span>
+                {entry.value}
+                {entry.comment && <span className="opacity-60 truncate max-w-[80px]" title={entry.comment}> — {entry.comment}</span>}
+              </span>
+            )
+          })}
+        </div>
+      )}
 
       {/* Photos */}
       {review.photos && review.photos.length > 0 && (

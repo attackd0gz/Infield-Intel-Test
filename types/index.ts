@@ -52,6 +52,13 @@ export interface Complex {
   created_at: string
 }
 
+export interface AmenityRatingEntry {
+  value: string
+  comment?: string
+}
+
+export type AmenityRatings = Record<string, AmenityRatingEntry>
+
 export interface Review {
   id: string
   complex_id: string
@@ -61,6 +68,7 @@ export interface Review {
   body: string
   visit_date: string | null
   helpful_count: number
+  amenity_ratings?: AmenityRatings | null
   created_at: string
   updated_at: string
   profile?: Profile

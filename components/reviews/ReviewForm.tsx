@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import type { Review, ReviewPhoto } from '@/types'
+import { AMENITY_QUESTIONS } from '@/lib/amenities'
+import type { Review, ReviewPhoto, AmenityRatings } from '@/types'
 
 const MAX_PHOTOS  = 5
 const MIN_CHARS   = 30
@@ -36,6 +37,26 @@ export function ReviewForm({ complexId, userId, existingReview, isFirstReview, o
   const [body, setBody]           = useState(existingReview?.body ?? '')
   const [visitDate, setVisitDate] = useState(existingReview?.visit_date ?? '')
   const [loading, setLoading]     = useState(false)
+
+  // Amenity ratings: key → { value, comment }
+  type AmenityState = Record<string, { value: string; comment: string }>
+  const [amenities, setAmenities] = useState<AmenityState>(() => {
+    const existing = existingReview?.amenity_ratings ?? {}
+    const result: AmenityState = {}
+    for (const [key, entry] of Object.entries(existing)) {
+      if (entry && typeof entry === 'object') {
+        result[key] = { value: entry.value ?? '', comment: entry.comment ?? '' }
+      }
+    }
+    return result
+  })
+
+  function setAmenityValue(key: string, value: string) {
+    setAmenities(prev => ({ ...prev, [key]: { value, comment: prev[key]?.comment ?? '' } }))
+  }
+  function setAmenityComment(key: string, comment: string) {
+    setAmenities(prev => ({ ...prev, [key]: { value: prev[key]?.value ?? 'Other', comment } }))
+  }
 
   // Existing photos (from DB) — user can remove them
   const [existingPhotos, setExistingPhotos] = useState<ReviewPhoto[]>(
@@ -88,6 +109,15 @@ export function ReviewForm({ complexId, userId, existingReview, isFirstReview, o
       const isNew    = !existingReview
       const isPioneer = isNew && isFirstReview
 
+      // Build amenity_ratings — only include fields the user filled in
+      const amenityRatings: AmenityRatings = {}
+      for (const [key, { value, comment }] of Object.entries(amenities)) {
+        if (!value) continue
+        amenityRatings[key] = value === 'Other'
+          ? { value, ...(comment.trim() ? { comment: comment.trim() } : {}) }
+          : { value }
+      }
+
       if (existingReview) {
         const { error } = await supabase
           .from('reviews')
@@ -96,6 +126,7 @@ export function ReviewForm({ complexId, userId, existingReview, isFirstReview, o
             title: title.trim(),
             body: body.trim(),
             visit_date: visitDate || null,
+            amenity_ratings: Object.keys(amenityRatings).length > 0 ? amenityRatings : null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', existingReview.id)
@@ -118,6 +149,7 @@ export function ReviewForm({ complexId, userId, existingReview, isFirstReview, o
             title: title.trim(),
             body: body.trim(),
             visit_date: visitDate || null,
+            amenity_ratings: Object.keys(amenityRatings).length > 0 ? amenityRatings : null,
           })
           .select('id')
           .single()
@@ -239,6 +271,50 @@ export function ReviewForm({ complexId, userId, existingReview, isFirstReview, o
           onChange={e => setVisitDate(e.target.value)}
           max={new Date().toISOString().slice(0, 7)}
         />
+      </div>
+
+      {/* Amenity ratings */}
+      <div className="space-y-3">
+        <div>
+          <Label className="text-sm font-semibold">Facility Ratings <span className="font-normal text-muted-foreground">(optional)</span></Label>
+          <p className="text-xs text-muted-foreground mt-0.5">Leave blank for any you didn&apos;t notice or can&apos;t rate.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {AMENITY_QUESTIONS.map(q => {
+            const current = amenities[q.key]?.value ?? ''
+            const comment = amenities[q.key]?.comment ?? ''
+            const showComment = q.hasOther && current === 'Other'
+
+            return (
+              <div key={q.key} className="space-y-1.5">
+                <label htmlFor={`amenity-${q.key}`} className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  {q.label}
+                </label>
+                <select
+                  id={`amenity-${q.key}`}
+                  value={current}
+                  onChange={e => setAmenityValue(q.key, e.target.value)}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0 transition-colors"
+                >
+                  <option value="">— Not rated —</option>
+                  {q.options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+                {showComment && (
+                  <input
+                    type="text"
+                    value={comment}
+                    onChange={e => setAmenityComment(q.key, e.target.value)}
+                    placeholder="Describe…"
+                    className="w-full rounded-lg border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Photos */}
