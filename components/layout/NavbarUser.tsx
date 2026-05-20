@@ -57,8 +57,8 @@ export function NavbarUser() {
   if (!profile) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="ghost" onClick={() => router.push('/login')}>Log in</Button>
-        <Button onClick={() => router.push('/signup')}>Sign up</Button>
+        <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white" onClick={() => router.push('/login')}>Log in</Button>
+        <Button className="bg-amber-500 hover:bg-amber-400 text-black font-semibold" onClick={() => router.push('/signup')}>Sign up</Button>
       </div>
     )
   }
