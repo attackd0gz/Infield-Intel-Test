@@ -56,6 +56,7 @@ export function MobileMenu() {
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
+    setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
     setOpen(false)
     router.push('/')
     router.refresh()

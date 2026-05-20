@@ -48,6 +48,7 @@ export function NavbarUser() {
   async function handleSignOut() {
     const supabase = createClient()
     await supabase.auth.signOut()
+    setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
     router.push('/')
     router.refresh()
   }
