@@ -51,6 +51,16 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
         .maybeSingle()
     : { data: null }
 
+  // Fetch which reviews this user has already voted helpful
+  const { data: userVotes } = user && reviews
+    ? await supabase
+        .from('helpful_votes')
+        .select('review_id')
+        .eq('user_id', user.id)
+        .in('review_id', reviews.map(r => r.id))
+    : { data: [] }
+  const votedReviewIds = new Set((userVotes ?? []).map(v => v.review_id))
+
   const c = complex as Complex
 
   return (
@@ -108,7 +118,7 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
         </TabsList>
 
         <TabsContent value="reviews">
-          <ReviewList reviews={reviews ?? []} currentUserId={user?.id ?? null} />
+          <ReviewList reviews={reviews ?? []} currentUserId={user?.id ?? null} votedReviewIds={votedReviewIds} />
         </TabsContent>
 
         <TabsContent value="info">

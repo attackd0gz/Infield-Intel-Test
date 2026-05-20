@@ -4,9 +4,10 @@ import type { Review } from '@/types'
 interface Props {
   reviews: Review[]
   currentUserId: string | null
+  votedReviewIds?: Set<string>
 }
 
-export function ReviewList({ reviews, currentUserId }: Props) {
+export function ReviewList({ reviews, currentUserId, votedReviewIds }: Props) {
   if (reviews.length === 0) {
     return (
       <div className="text-center py-16 text-muted-foreground">
@@ -19,7 +20,12 @@ export function ReviewList({ reviews, currentUserId }: Props) {
   return (
     <div className="space-y-4">
       {reviews.map(review => (
-        <ReviewCard key={review.id} review={review} currentUserId={currentUserId} />
+        <ReviewCard
+          key={review.id}
+          review={review}
+          currentUserId={currentUserId}
+          initialVoted={votedReviewIds?.has(review.id) ?? false}
+        />
       ))}
     </div>
   )
