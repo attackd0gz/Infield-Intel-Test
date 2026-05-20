@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { defaultOgImage } from '@/lib/site'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Star, Image as ImageIcon, ThumbsUp, Trophy, Pencil, ChevronRight } from 'lucide-react'
 import { BADGE_THRESHOLDS } from '@/types'
@@ -8,7 +9,37 @@ import type { BadgeLevel, Profile, Review } from '@/types'
 
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
-  return { title: `${username} | Infield Intel` }
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('profiles')
+    .select('full_name, username, bio, avatar_url, badge_level, review_count')
+    .eq('username', username)
+    .single()
+
+  if (!data) return { title: username }
+
+  const displayName = data.full_name ?? data.username
+  const title = `${displayName} (@${data.username})`
+  const description =
+    data.bio ||
+    `${displayName} is a ${data.badge_level} on Infield Intel with ${data.review_count} review${data.review_count !== 1 ? 's' : ''}.`
+  const image = data.avatar_url || defaultOgImage
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Infield Intel`,
+      description,
+      images: [{ url: image, width: 400, height: 400, alt: displayName }],
+    },
+    twitter: {
+      card: data.avatar_url ? 'summary' : 'summary_large_image',
+      title: `${title} | Infield Intel`,
+      description,
+      images: [image],
+    },
+  }
 }
 
 const BADGE_ORDER: BadgeLevel[] = [

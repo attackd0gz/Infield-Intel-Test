@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EditProfileForm } from '@/components/profile/EditProfileForm'
 import type { Profile } from '@/types'
 
-export const metadata = { title: 'Edit Profile | Infield Intel' }
+export const metadata = { title: 'Edit Profile' }
 
 export default async function EditProfilePage() {
   const supabase = await createClient()

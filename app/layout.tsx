@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { siteUrl, defaultOgImage } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,9 +25,37 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const defaultDescription =
+  "Rate, review, and discover baseball complexes near San Antonio, TX. " +
+  "Real reviews from real players and families.";
+
 export const metadata: Metadata = {
-  title: "Infield Intel",
-  description: "Rate, review, and discover baseball complexes near you.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Infield Intel",
+    template: "%s | Infield Intel",
+  },
+  description: defaultDescription,
+  openGraph: {
+    type: "website",
+    siteName: "Infield Intel",
+    title: "Infield Intel",
+    description: defaultDescription,
+    images: [
+      {
+        url: defaultOgImage,
+        width: 1200,
+        height: 630,
+        alt: "Infield Intel — Baseball Complex Reviews",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Infield Intel",
+    description: defaultDescription,
+    images: [defaultOgImage],
+  },
 };
 
 export default function RootLayout({

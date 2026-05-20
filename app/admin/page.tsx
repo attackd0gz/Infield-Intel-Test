@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Users, Building2, Star, MessageSquare } from 'lucide-react'
 
-export const metadata = { title: 'Admin Dashboard | Infield Intel' }
+export const metadata = { title: 'Admin Dashboard' }
 
 export default async function AdminDashboard() {
   const supabase = createAdminClient()

@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { MapView } from '@/components/map/MapView'
 import type { Complex } from '@/types'
 
-export const metadata = { title: 'Map | Infield Intel' }
+export const metadata = { title: 'Map' }
 
 export default async function MapPage() {
   const supabase = await createClient()

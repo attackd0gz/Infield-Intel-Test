@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Mail, MessageSquare } from 'lucide-react'
 import { ContactForm } from '@/components/contact/ContactForm'
 
-export const metadata = { title: 'Contact Us | Infield Intel' }
+export const metadata = { title: 'Contact Us' }
 
 export default function ContactPage() {
   return (

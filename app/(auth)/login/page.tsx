@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { LogoIcon } from '@/components/ui/LogoIcon'
 import { LoginForm } from '@/components/auth/LoginForm'
 
-export const metadata = { title: 'Log In | Infield Intel' }
+export const metadata = { title: 'Log In' }
 
 export default function LoginPage() {
   return (

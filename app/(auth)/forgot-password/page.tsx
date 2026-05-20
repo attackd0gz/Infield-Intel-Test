@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { LogoIcon } from '@/components/ui/LogoIcon'
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm'
 
-export const metadata = { title: 'Reset Password | Infield Intel' }
+export const metadata = { title: 'Reset Password' }
 
 export default function ForgotPasswordPage() {
   return (

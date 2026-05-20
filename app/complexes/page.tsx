@@ -5,7 +5,7 @@ import { ComplexSearch } from '@/components/complexes/ComplexSearch'
 import { MapPin } from 'lucide-react'
 import type { Complex } from '@/types'
 
-export const metadata = { title: 'Browse Complexes | Infield Intel' }
+export const metadata = { title: 'Browse Complexes' }
 
 export default async function ComplexesPage({
   searchParams,

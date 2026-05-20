@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { defaultOgImage } from '@/lib/site'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Phone, Globe, Star } from 'lucide-react'
@@ -11,8 +12,38 @@ import type { Complex } from '@/types'
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
-  const { data } = await supabase.from('complexes').select('name').eq('id', id).single()
-  return { title: data ? `${data.name} | Infield Intel` : 'Complex | Infield Intel' }
+  const { data } = await supabase
+    .from('complexes')
+    .select('name, description, cover_photo_url, city, state, average_rating, review_count')
+    .eq('id', id)
+    .single()
+
+  if (!data) return { title: 'Complex' }
+
+  const title = data.name
+  const description =
+    data.description ||
+    `${data.name} in ${data.city}, ${data.state}. ` +
+    (data.average_rating > 0
+      ? `Rated ${Number(data.average_rating).toFixed(1)}/5 from ${data.review_count} review${data.review_count !== 1 ? 's' : ''}.`
+      : 'Be the first to leave a review!')
+  const image = data.cover_photo_url || defaultOgImage
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Infield Intel`,
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Infield Intel`,
+      description,
+      images: [image],
+    },
+  }
 }
 
 export default async function ComplexPage({ params }: { params: Promise<{ id: string }> }) {

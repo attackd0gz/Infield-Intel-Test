@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Trophy, Star, Image as ImageIcon } from 'lucide-react'
 import type { Profile } from '@/types'
 
-export const metadata = { title: 'Leaderboard | Infield Intel' }
+export const metadata = { title: 'Leaderboard' }
 
 const BADGE_COLORS: Record<string, string> = {
   'Rookie':        'bg-zinc-100 text-zinc-600',

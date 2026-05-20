@@ -4,7 +4,7 @@ import { OnboardingForm } from '@/components/onboarding/OnboardingForm'
 import { LogoIcon } from '@/components/ui/LogoIcon'
 import type { Profile } from '@/types'
 
-export const metadata = { title: 'Welcome | Infield Intel' }
+export const metadata = { title: 'Welcome' }
 
 export default async function WelcomePage() {
   const supabase = await createClient()
