@@ -86,22 +86,22 @@ export function NavbarUser() {
           <p className="text-xs font-medium">{profile.points.toLocaleString()} pts</p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => router.push(`/profile/${profile.username}`)}>
+        <DropdownMenuItem onClick={() => router.push(`/profile/${profile.username}`)}>
           My Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => router.push('/profile/edit')}>
+        <DropdownMenuItem onClick={() => router.push('/profile/edit')}>
           Edit Profile
         </DropdownMenuItem>
         {profile.role === 'admin' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => router.push('/admin')}>
+            <DropdownMenuItem onClick={() => router.push('/admin')}>
               Admin Panel
             </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={handleSignOut} className="text-destructive">
+        <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
