@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { geocodeAddress } from '@/lib/geocode'
 
 async function verifyAdmin() {
   const supabase = await createClient()
@@ -35,10 +36,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'name, address, city, and state are required' }, { status: 400 })
   }
 
+  // Geocode the address — best-effort, non-blocking on failure
+  const coords = await geocodeAddress(fields.address, fields.city, fields.state, fields.zip || null)
+
   const admin = createAdminClient()
 
   if (complexId) {
-    // Update
+    // Update — only overwrite lat/lng if geocoding succeeded
+    const locationFields = coords ? { lat: coords.lat, lng: coords.lng } : {}
     const { error } = await admin
       .from('complexes')
       .update({
@@ -52,13 +57,14 @@ export async function POST(request: Request) {
         description: fields.description || null,
         amenities: fields.amenities ?? [],
         cover_photo_url: fields.cover_photo_url ?? null,
+        ...locationFields,
       })
       .eq('id', complexId)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    return NextResponse.json({ ok: true, complexId })
+    return NextResponse.json({ ok: true, complexId, geocoded: !!coords })
   } else {
-    // Insert — lat/lng default to 0 for now, admin can geocode later
+    // Insert
     const { data, error } = await admin
       .from('complexes')
       .insert({
@@ -72,13 +78,13 @@ export async function POST(request: Request) {
         description: fields.description || null,
         amenities: fields.amenities ?? [],
         cover_photo_url: fields.cover_photo_url ?? null,
-        lat: 0,
-        lng: 0,
+        lat: coords?.lat ?? 0,
+        lng: coords?.lng ?? 0,
       })
       .select('id')
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    return NextResponse.json({ ok: true, complexId: data.id })
+    return NextResponse.json({ ok: true, complexId: data.id, geocoded: !!coords })
   }
 }

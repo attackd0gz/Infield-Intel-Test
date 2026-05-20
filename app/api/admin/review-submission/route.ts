@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { geocodeAddress } from '@/lib/geocode'
 
 async function verifyAdmin() {
   const supabase = await createClient()
@@ -43,7 +44,9 @@ export async function POST(request: Request) {
   }
 
   if (action === 'approve') {
-    // Create the complex (lat/lng default to 0 — admin can geocode later)
+    // Geocode the address before inserting
+    const coords = await geocodeAddress(sub.address, sub.city, sub.state, sub.zip)
+
     const { error: insertError } = await admin.from('complexes').insert({
       name:        sub.name,
       address:     sub.address,
@@ -54,8 +57,8 @@ export async function POST(request: Request) {
       website:     sub.website     ?? null,
       description: sub.description ?? null,
       amenities:   sub.amenities   ?? [],
-      lat: 0,
-      lng: 0,
+      lat: coords?.lat ?? 0,
+      lng: coords?.lng ?? 0,
     })
 
     if (insertError) {
