@@ -89,6 +89,17 @@ export function NavbarUser() {
         <DropdownMenuItem onSelect={() => window.location.href = `/profile/${profile.username}`}>
           My Profile
         </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => window.location.href = `/profile/edit`}>
+          Edit Profile
+        </DropdownMenuItem>
+        {profile.role === 'admin' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => window.location.href = `/admin`}>
+              Admin Panel
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
           Sign out
