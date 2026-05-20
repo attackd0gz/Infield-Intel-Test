@@ -19,10 +19,10 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-primary text-white shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-black text-xl tracking-tight">
+        <Link href="/" className="flex items-center gap-2" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
           <span className="text-amber-400 text-2xl">⚾</span>
-          <span className="text-white">Infield</span>
-          <span className="text-amber-400">Intel</span>
+          <span className="text-white text-2xl font-bold tracking-widest uppercase">Infield</span>
+          <span className="text-amber-400 text-2xl font-bold tracking-widest uppercase">Intel</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -48,9 +48,10 @@ export function Navbar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-64 bg-primary text-white border-white/10">
-            <div className="flex items-center gap-2 font-black text-xl mb-8">
-              <span className="text-amber-400">⚾</span>
-              <span>Infield</span><span className="text-amber-400">Intel</span>
+            <div className="flex items-center gap-2 mb-8" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
+              <span className="text-amber-400 text-xl">⚾</span>
+              <span className="text-white text-xl font-bold tracking-widest uppercase">Infield</span>
+              <span className="text-amber-400 text-xl font-bold tracking-widest uppercase">Intel</span>
             </div>
             <nav className="flex flex-col gap-1">
               {links.map(({ href, label, icon: Icon }) => (

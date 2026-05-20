@@ -31,7 +31,7 @@ export default function Home() {
             <span className="text-amber-400">⚾</span>
             San Antonio &amp; Beyond
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black tracking-tight mb-4 text-balance leading-tight">
+          <h1 className="text-5xl sm:text-6xl font-bold tracking-wide mb-4 text-balance leading-tight uppercase">
             The Inside Scoop on<br />
             <span className="text-amber-400">Baseball Complexes</span>
           </h1>
@@ -77,7 +77,7 @@ export default function Home() {
       <section className="py-24 px-4 bg-white">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black mb-3">Everything You Need to Know Before You Go</h2>
+            <h2 className="text-4xl font-bold tracking-wide uppercase mb-3">Everything You Need to Know Before You Go</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Stop guessing. Infield Intel gives you the real picture of every complex — from parking to pitching mounds.
             </p>
@@ -127,7 +127,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-primary/80 flex items-center justify-center">
           <div className="text-center text-white px-4">
-            <p className="text-3xl font-black mb-2">Know Before You Play</p>
+            <p className="text-3xl font-bold tracking-wide uppercase mb-2">Know Before You Play</p>
             <p className="text-white/80">Amenities, fields, parking, and more — all in one place.</p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function Home() {
       <section className="py-20 px-4 bg-zinc-950 text-white">
         <div className="container mx-auto max-w-3xl text-center">
           <Trophy className="h-10 w-10 text-amber-400 mx-auto mb-4" />
-          <h2 className="text-3xl font-black mb-3">Climb the Ranks</h2>
+          <h2 className="text-3xl font-bold tracking-wide uppercase mb-3">Climb the Ranks</h2>
           <p className="text-white/60 mb-10 max-w-lg mx-auto">
             Every review and photo earns points. Level up from Rookie all the way to
             Hall of Famer and claim your spot on the leaderboard.
@@ -176,7 +176,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/65" />
         <div className="relative z-10 container mx-auto max-w-2xl text-center text-white">
-          <h2 className="text-3xl font-black mb-3">Own or Manage a Complex?</h2>
+          <h2 className="text-3xl font-bold tracking-wide uppercase mb-3">Own or Manage a Complex?</h2>
           <p className="text-white/75 mb-6">
             Claim your listing, respond to reviews, and post renovation plans or upcoming events.
           </p>
