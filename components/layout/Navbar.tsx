@@ -6,6 +6,7 @@ import { Menu, Map, Trophy, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { NavbarUser } from './NavbarUser'
+import { LogoIcon } from '@/components/ui/LogoIcon'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
@@ -19,10 +20,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-primary text-white shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
-          <span className="text-amber-400 text-2xl">⚾</span>
-          <span className="text-white text-2xl font-bold tracking-widest uppercase">Infield</span>
-          <span className="text-amber-400 text-2xl font-bold tracking-widest uppercase">Intel</span>
+        <Link href="/" className="flex items-center gap-2.5">
+          <LogoIcon size={38} />
+          <span className="text-white text-xl font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
+            Infield <span className="text-amber-400">Intel</span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -48,10 +50,11 @@ export function Navbar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-64 bg-primary text-white border-white/10">
-            <div className="flex items-center gap-2 mb-8" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
-              <span className="text-amber-400 text-xl">⚾</span>
-              <span className="text-white text-xl font-bold tracking-widest uppercase">Infield</span>
-              <span className="text-amber-400 text-xl font-bold tracking-widest uppercase">Intel</span>
+            <div className="flex items-center gap-2.5 mb-8">
+              <LogoIcon size={34} />
+              <span className="text-white text-lg font-bold tracking-widest uppercase" style={{ fontFamily: 'var(--font-oswald), sans-serif' }}>
+                Infield <span className="text-amber-400">Intel</span>
+              </span>
             </div>
             <nav className="flex flex-col gap-1">
               {links.map(({ href, label, icon: Icon }) => (
