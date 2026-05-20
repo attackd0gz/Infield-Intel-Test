@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -11,10 +12,17 @@ import { Separator } from '@/components/ui/separator'
 export function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const [done, setDone] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (!agreed) {
+      toast.error('You must accept the Terms of Service and Privacy Policy to continue.')
+      return
+    }
+
     setLoading(true)
     const form = new FormData(e.currentTarget)
     const password = form.get('password') as string
@@ -34,6 +42,7 @@ export function SignupForm() {
         data: {
           full_name: form.get('full_name') as string,
           username: (form.get('email') as string).split('@')[0],
+          terms_accepted_at: new Date().toISOString(),
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
@@ -49,6 +58,10 @@ export function SignupForm() {
   }
 
   async function handleGoogleSignup() {
+    if (!agreed) {
+      toast.error('You must accept the Terms of Service and Privacy Policy to continue.')
+      return
+    }
     setGoogleLoading(true)
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -102,11 +115,40 @@ export function SignupForm() {
           <Label htmlFor="confirm">Confirm password</Label>
           <Input id="confirm" name="confirm" type="password" required autoComplete="new-password" />
         </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Creating account...' : 'Create account'}
+
+        {/* Terms acceptance */}
+        <div className="flex items-start gap-3 pt-1">
+          <input
+            id="terms"
+            type="checkbox"
+            checked={agreed}
+            onChange={e => setAgreed(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-input accent-primary cursor-pointer"
+          />
+          <label htmlFor="terms" className="text-sm text-muted-foreground leading-snug cursor-pointer">
+            I agree to the{' '}
+            <Link
+              href="/terms"
+              target="_blank"
+              className="font-semibold text-foreground underline underline-offset-4 hover:text-primary"
+            >
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="font-semibold text-foreground underline underline-offset-4 hover:text-primary"
+            >
+              Privacy Policy
+            </Link>
+          </label>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={loading || !agreed}>
+          {loading ? 'Creating account…' : 'Create account'}
         </Button>
       </form>
-
     </div>
   )
 }
