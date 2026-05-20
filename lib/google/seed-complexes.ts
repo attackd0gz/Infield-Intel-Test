@@ -8,6 +8,8 @@
  *   SUPABASE_SERVICE_ROLE_KEY
  */
 
+import { config } from 'dotenv'
+config({ path: '.env.local' })
 import { createClient } from '@supabase/supabase-js'
 
 const PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY!
