@@ -2,9 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Star, Image as ImageIcon, ThumbsUp, Trophy, Pencil } from 'lucide-react'
+import { Star, Image as ImageIcon, ThumbsUp, Trophy, Pencil, ChevronRight } from 'lucide-react'
 import { BADGE_THRESHOLDS } from '@/types'
 import type { BadgeLevel, Profile, Review } from '@/types'
 
@@ -17,6 +15,18 @@ const BADGE_ORDER: BadgeLevel[] = [
   'Rookie', 'Minor Leaguer', 'Single-A', 'Double-A', 'Triple-A',
   'Major Leaguer', 'All-Star', 'MVP', 'Hall of Famer'
 ]
+
+const BADGE_COLORS: Record<BadgeLevel, { pill: string; dot: string }> = {
+  'Rookie':        { pill: 'bg-zinc-100 text-zinc-600 border-zinc-200',      dot: 'bg-zinc-300' },
+  'Minor Leaguer': { pill: 'bg-zinc-100 text-zinc-600 border-zinc-200',      dot: 'bg-zinc-400' },
+  'Single-A':      { pill: 'bg-green-100 text-green-700 border-green-200',   dot: 'bg-green-500' },
+  'Double-A':      { pill: 'bg-green-100 text-green-700 border-green-200',   dot: 'bg-green-600' },
+  'Triple-A':      { pill: 'bg-blue-100 text-blue-700 border-blue-200',      dot: 'bg-blue-500' },
+  'Major Leaguer': { pill: 'bg-blue-100 text-blue-700 border-blue-200',      dot: 'bg-blue-600' },
+  'All-Star':      { pill: 'bg-purple-100 text-purple-700 border-purple-200', dot: 'bg-purple-500' },
+  'MVP':           { pill: 'bg-amber-100 text-amber-700 border-amber-200',   dot: 'bg-amber-500' },
+  'Hall of Famer': { pill: 'bg-amber-100 text-amber-700 border-amber-200',   dot: 'bg-amber-400' },
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
@@ -43,121 +53,195 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const currentBadgeIndex = BADGE_ORDER.indexOf(p.badge_level)
   const nextBadge = BADGE_ORDER[currentBadgeIndex + 1] as BadgeLevel | undefined
   const nextThreshold = nextBadge ? BADGE_THRESHOLDS[nextBadge] : null
-  const progress = nextThreshold ? Math.min((p.points / nextThreshold) * 100, 100) : 100
+  const currentThreshold = BADGE_THRESHOLDS[p.badge_level]
+  const progress = nextThreshold
+    ? Math.min(((p.points - currentThreshold) / (nextThreshold - currentThreshold)) * 100, 100)
+    : 100
+  const colors = BADGE_COLORS[p.badge_level]
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
-      {/* Profile header */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
-        <Avatar className="h-24 w-24">
-          <AvatarImage src={p.avatar_url ?? undefined} />
-          <AvatarFallback className="text-2xl">
-            {(p.full_name ?? p.username).charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
-            <h1 className="text-2xl font-bold">{p.full_name ?? p.username}</h1>
-            {isOwnProfile && (
-              <Link
-                href="/profile/edit"
-                className="h-8 w-8 rounded-lg border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
-                title="Edit profile"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Link>
-            )}
+    <div className="flex flex-col">
+      {/* Profile header band */}
+      <div className="bg-primary text-white">
+        <div className="container mx-auto max-w-4xl px-4 py-10">
+          <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+            {/* Avatar */}
+            <div className="relative shrink-0">
+              <Avatar className="h-24 w-24 ring-4 ring-white/20">
+                <AvatarImage src={p.avatar_url ?? undefined} />
+                <AvatarFallback className="text-3xl font-bold bg-white/10 text-white">
+                  {(p.full_name ?? p.username).charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
+            {/* Name + info */}
+            <div className="flex-1 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-2 mb-0.5">
+                <h1 className="text-2xl font-bold">{p.full_name ?? p.username}</h1>
+                {isOwnProfile && (
+                  <Link
+                    href="/profile/edit"
+                    className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                    title="Edit profile"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Link>
+                )}
+              </div>
+              <p className="text-white/60 text-sm mb-3">@{p.username}</p>
+
+              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${colors.pill}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
+                {p.badge_level}
+              </span>
+
+              {p.bio && <p className="text-white/70 text-sm mt-3 max-w-md">{p.bio}</p>}
+            </div>
+
+            {/* Points */}
+            <div className="text-center sm:text-right shrink-0">
+              <p className="text-3xl font-black text-amber-400">{p.points.toLocaleString()}</p>
+              <p className="text-white/60 text-xs uppercase tracking-wide">points</p>
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">@{p.username}</p>
-          <Badge className="mb-3">{p.badge_level}</Badge>
-          {p.bio && <p className="text-sm text-muted-foreground">{p.bio}</p>}
 
           {/* Progress to next badge */}
           {nextBadge && (
-            <div className="mt-3 max-w-xs">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>{p.points} pts</span>
-                <span>{nextThreshold} pts → {nextBadge}</span>
+            <div className="mt-6 max-w-sm">
+              <div className="flex justify-between text-xs text-white/50 mb-1.5">
+                <span>{p.badge_level}</span>
+                <span>{nextBadge} — {nextThreshold?.toLocaleString()} pts</span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-green-600 rounded-full transition-all" style={{ width: `${progress}%` }} />
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-amber-400 rounded-full transition-all"
+                  style={{ width: `${Math.max(progress, 2)}%` }}
+                />
               </div>
+            </div>
+          )}
+          {!nextBadge && (
+            <div className="mt-4 inline-flex items-center gap-2 text-amber-400 text-sm font-semibold">
+              <Trophy className="h-4 w-4" />
+              Hall of Famer — Maximum rank achieved
             </div>
           )}
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {[
-          { icon: Star, label: 'Reviews', value: p.review_count },
-          { icon: ImageIcon, label: 'Photos', value: p.photo_count },
-          { icon: ThumbsUp, label: 'Helpful', value: p.helpful_votes },
-        ].map(({ icon: Icon, label, value }) => (
-          <Card key={label}>
-            <CardContent className="flex flex-col items-center py-4">
-              <Icon className="h-5 w-5 text-muted-foreground mb-1" />
-              <span className="text-2xl font-bold">{value}</span>
-              <span className="text-xs text-muted-foreground">{label}</span>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Badge progression */}
-      <div className="mb-8">
-        <h2 className="font-semibold text-lg mb-3 flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
-          Badge Progress
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {BADGE_ORDER.map((level, i) => {
-            const earned = i <= currentBadgeIndex
-            return (
-              <span
-                key={level}
-                className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
-                  earned ? 'bg-green-700 text-white border-green-700' : 'text-muted-foreground border-muted'
-                }`}
-              >
-                {level}
-              </span>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Reviews */}
-      <div>
-        <h2 className="font-semibold text-lg mb-4">Reviews ({p.review_count})</h2>
-        {reviews && reviews.length > 0 ? (
-          <div className="space-y-4">
-            {(reviews as (Review & { complex: { id: string; name: string; city: string; state: string } | null })[]).map(review => (
-              <div key={review.id} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    {review.complex && (
-                      <a href={`/complexes/${review.complex.id}`} className="font-medium hover:underline">
-                        {review.complex.name}
-                      </a>
-                    )}
-                    <p className="text-xs text-muted-foreground">{review.complex?.city}, {review.complex?.state}</p>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    {[1,2,3,4,5].map(n => (
-                      <Star key={n} className={`h-4 w-4 ${n <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
-                    ))}
-                  </div>
-                </div>
-                <p className="font-semibold text-sm mb-1">{review.title}</p>
-                <p className="text-sm text-muted-foreground line-clamp-3">{review.body}</p>
-                <p className="text-xs text-muted-foreground mt-2">{new Date(review.created_at).toLocaleDateString()}</p>
+      {/* Stats strip */}
+      <div className="bg-zinc-900 text-white">
+        <div className="container mx-auto max-w-4xl px-4">
+          <div className="grid grid-cols-3 divide-x divide-white/10 text-center">
+            {[
+              { icon: Star, label: 'Reviews', value: p.review_count },
+              { icon: ImageIcon, label: 'Photos', value: p.photo_count },
+              { icon: ThumbsUp, label: 'Helpful Votes', value: p.helpful_votes },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label} className="px-4 py-4">
+                <p className="text-xl font-black text-amber-400">{value}</p>
+                <p className="text-xs text-white/50 uppercase tracking-wide mt-0.5">{label}</p>
               </div>
             ))}
           </div>
-        ) : (
-          <p className="text-muted-foreground text-sm">No reviews yet.</p>
-        )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* Badge progression */}
+          <div className="lg:col-span-1">
+            <h2 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-amber-500" />
+              Badge Progress
+            </h2>
+            <div className="space-y-2">
+              {BADGE_ORDER.map((level, i) => {
+                const earned = i <= currentBadgeIndex
+                const current = i === currentBadgeIndex
+                const c = BADGE_COLORS[level]
+                return (
+                  <div
+                    key={level}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors ${
+                      current
+                        ? 'bg-primary/5 border-primary/20'
+                        : earned
+                        ? 'bg-white border-transparent'
+                        : 'bg-zinc-50 border-transparent opacity-40'
+                    }`}
+                  >
+                    <span className={`h-2 w-2 rounded-full shrink-0 ${earned ? c.dot : 'bg-zinc-300'}`} />
+                    <span className={`text-sm font-medium flex-1 ${earned ? '' : 'text-muted-foreground'}`}>
+                      {level}
+                    </span>
+                    {current && (
+                      <span className="text-xs font-semibold text-primary">Current</span>
+                    )}
+                    {earned && !current && (
+                      <span className="text-xs text-green-600">✓</span>
+                    )}
+                    {!earned && (
+                      <span className="text-xs text-muted-foreground">
+                        {BADGE_THRESHOLDS[level]}pts
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Reviews */}
+          <div className="lg:col-span-2">
+            <h2 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4">
+              Reviews ({p.review_count})
+            </h2>
+            {reviews && reviews.length > 0 ? (
+              <div className="space-y-4">
+                {(reviews as (Review & { complex: { id: string; name: string; city: string; state: string } | null })[]).map(review => (
+                  <div key={review.id} className="bg-white rounded-xl border p-4 hover:shadow-sm transition-shadow">
+                    <div className="flex items-start justify-between mb-2 gap-3">
+                      <div>
+                        {review.complex && (
+                          <Link
+                            href={`/complexes/${review.complex.id}`}
+                            className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1 group"
+                          >
+                            {review.complex.name}
+                            <ChevronRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </Link>
+                        )}
+                        <p className="text-xs text-muted-foreground">{review.complex?.city}, {review.complex?.state}</p>
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        {[1,2,3,4,5].map(n => (
+                          <Star key={n} className={`h-4 w-4 ${n <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20'}`} />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="font-semibold text-sm mb-1">{review.title}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{review.body}</p>
+                    <p className="text-xs text-muted-foreground mt-2">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 text-muted-foreground">
+                <Star className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                <p className="text-sm">No reviews yet.</p>
+                {isOwnProfile && (
+                  <Link href="/complexes" className="text-sm text-primary hover:underline mt-1 block">
+                    Browse complexes to get started →
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
