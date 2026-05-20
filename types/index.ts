@@ -1,4 +1,5 @@
 export type UserRole = 'user' | 'owner' | 'admin'
+export type PlayerType = 'player' | 'parent' | 'coach' | 'fan'
 
 export type BadgeLevel =
   | 'Rookie'
@@ -23,6 +24,10 @@ export interface Profile {
   photo_count: number
   helpful_votes: number
   bio: string | null
+  onboarding_complete: boolean
+  player_type: PlayerType | null
+  age_group: string | null
+  favorite_teams: string[]
   created_at: string
 }
 

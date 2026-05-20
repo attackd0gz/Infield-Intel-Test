@@ -20,7 +20,7 @@ export function LoginForm() {
     const form = new FormData(e.currentTarget)
     const supabase = createClient()
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: form.get('email') as string,
       password: form.get('password') as string,
     })
@@ -29,6 +29,20 @@ export function LoginForm() {
       toast.error(error.message)
       setLoading(false)
       return
+    }
+
+    // Send first-timers to onboarding
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_complete')
+        .eq('id', data.user.id)
+        .single()
+
+      if (!profile?.onboarding_complete) {
+        router.push('/welcome')
+        return
+      }
     }
 
     router.push('/')
