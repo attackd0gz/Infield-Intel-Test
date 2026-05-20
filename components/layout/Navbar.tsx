@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Menu, Map, Trophy, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { NavbarUser } from './NavbarUser'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
@@ -23,7 +24,6 @@ export function Navbar() {
           <span>Infield Intel</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6">
           {links.map(({ href, label }) => (
             <Link
@@ -37,15 +37,9 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Link href="/login">
-            <Button variant="ghost">Log in</Button>
-          </Link>
-          <Link href="/signup">
-            <Button>Sign up</Button>
-          </Link>
+          <NavbarUser />
         </div>
 
-        {/* Mobile nav */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger className="md:hidden">
             <Button variant="ghost" size="icon">
@@ -66,12 +60,7 @@ export function Navbar() {
                 </Link>
               ))}
               <hr />
-              <Link href="/login" onClick={() => setOpen(false)} className="text-sm font-medium">
-                Log in
-              </Link>
-              <Link href="/signup" onClick={() => setOpen(false)}>
-                <Button className="w-full">Sign up</Button>
-              </Link>
+              <NavbarUser />
             </nav>
           </SheetContent>
         </Sheet>
