@@ -1,4 +1,8 @@
+import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { AdminDeleteComplex } from '@/components/admin/AdminDeleteComplex'
+import { Button } from '@/components/ui/button'
+import { Plus, Pencil } from 'lucide-react'
 import type { Complex } from '@/types'
 
 export const metadata = { title: 'Complexes | Admin' }
@@ -12,9 +16,17 @@ export default async function AdminComplexesPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold tracking-wide uppercase mb-6">
-        Complexes <span className="text-muted-foreground font-normal text-base ml-2">({complexes?.length ?? 0})</span>
-      </h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold tracking-wide uppercase">
+          Complexes <span className="text-muted-foreground font-normal text-base ml-2">({complexes?.length ?? 0})</span>
+        </h1>
+        <Link href="/admin/complexes/new">
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Complex
+          </Button>
+        </Link>
+      </div>
 
       <div className="bg-white rounded-xl border overflow-hidden">
         <table className="w-full text-sm">
@@ -25,7 +37,7 @@ export default async function AdminComplexesPage() {
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Rating</th>
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Reviews</th>
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Owner</th>
-              <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground"></th>
+              <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -49,9 +61,17 @@ export default async function AdminComplexesPage() {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <a href={`/complexes/${c.id}`} target="_blank" className="text-xs text-primary hover:underline">
-                    View →
-                  </a>
+                  <div className="flex items-center gap-1">
+                    <a href={`/complexes/${c.id}`} target="_blank" className="text-xs text-primary hover:underline mr-1">
+                      View
+                    </a>
+                    <Link href={`/admin/complexes/${c.id}/edit`}>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                    </Link>
+                    <AdminDeleteComplex complexId={c.id} name={c.name} />
+                  </div>
                 </td>
               </tr>
             ))}

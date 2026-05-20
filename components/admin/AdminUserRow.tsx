@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { AdminEditUserDialog } from './AdminEditUserDialog'
+import { AdminDeleteUser } from './AdminDeleteUser'
 import type { Profile, UserRole } from '@/types'
 
 const ROLES: UserRole[] = ['user', 'owner', 'admin']
@@ -60,6 +62,12 @@ export function AdminUserRow({ user }: { user: Profile }) {
       </td>
       <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
         {new Date(user.created_at).toLocaleDateString()}
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-1">
+          <AdminEditUserDialog user={user} />
+          <AdminDeleteUser userId={user.id} username={user.username} />
+        </div>
       </td>
     </tr>
   )

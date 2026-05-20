@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AdminUserRow } from '@/components/admin/AdminUserRow'
+import { AdminAddUserDialog } from '@/components/admin/AdminAddUserDialog'
 import type { Profile } from '@/types'
 
 export const metadata = { title: 'Users | Admin' }
@@ -13,9 +14,12 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold tracking-wide uppercase mb-6">
-        Users <span className="text-muted-foreground font-normal text-base ml-2">({users?.length ?? 0})</span>
-      </h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold tracking-wide uppercase">
+          Users <span className="text-muted-foreground font-normal text-base ml-2">({users?.length ?? 0})</span>
+        </h1>
+        <AdminAddUserDialog />
+      </div>
 
       <div className="bg-white rounded-xl border overflow-hidden">
         <table className="w-full text-sm">
@@ -27,6 +31,7 @@ export default async function AdminUsersPage() {
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Reviews</th>
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Role</th>
               <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Joined</th>
+              <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wide text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
