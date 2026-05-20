@@ -41,6 +41,16 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
     .eq('complex_id', id)
     .order('created_at', { ascending: false })
 
+  // Check if current user already has a pending claim for this complex
+  const { data: existingClaim } = user
+    ? await supabase
+        .from('claim_requests')
+        .select('status')
+        .eq('complex_id', id)
+        .eq('user_id', user.id)
+        .maybeSingle()
+    : { data: null }
+
   const c = complex as Complex
 
   return (
@@ -81,6 +91,7 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
               complexName={c.name}
               ownerId={c.owner_id}
               currentUserId={user?.id ?? null}
+              hasPendingClaim={existingClaim?.status === 'pending'}
             />
             <WriteReviewButton complexId={c.id} userId={user?.id ?? null} existingReview={reviews?.find(r => r.user_id === user?.id) ?? null} />
           </div>

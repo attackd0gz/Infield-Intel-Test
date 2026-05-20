@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { LayoutDashboard, Users, MessageSquare, Star, Building2, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, MessageSquare, Star, Building2, LogOut, Shield } from 'lucide-react'
 
 const NAV = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/claims', label: 'Claim Requests', icon: Shield },
   { href: '/admin/complexes', label: 'Complexes', icon: Building2 },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
