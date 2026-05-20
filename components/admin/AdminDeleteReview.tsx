@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { Trash2 } from 'lucide-react'
 
 export function AdminDeleteReview({ reviewId }: { reviewId: string }) {
@@ -13,11 +12,15 @@ export function AdminDeleteReview({ reviewId }: { reviewId: string }) {
 
   async function handleDelete() {
     setLoading(true)
-    const supabase = createClient()
-    const { error } = await supabase.from('reviews').delete().eq('id', reviewId)
+    const res = await fetch('/api/admin/delete-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviewId }),
+    })
+    const json = await res.json()
 
-    if (error) {
-      toast.error('Failed to delete: ' + error.message)
+    if (!res.ok) {
+      toast.error(json.error ?? 'Failed to delete review')
       setLoading(false)
       setConfirming(false)
       return

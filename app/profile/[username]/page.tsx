@@ -67,7 +67,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, username, full_name, avatar_url, bio, role, badge_level, points, review_count, photo_count, helpful_votes, player_type, age_group, favorite_teams, onboarding_complete, created_at')
     .eq('username', username)
     .single()
 

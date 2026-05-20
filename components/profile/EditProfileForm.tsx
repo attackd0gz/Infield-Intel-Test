@@ -23,9 +23,22 @@ export function EditProfileForm({ profile }: Props) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(profile.avatar_url)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
+  const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  const MAX_AVATAR_BYTES = 5 * 1024 * 1024  // 5 MB
+
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      toast.error('Avatar must be a JPEG, PNG, WebP, or GIF image.')
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast.error('Avatar must be under 5 MB.')
+      e.target.value = ''
+      return
+    }
     setAvatarFile(file)
     setAvatarPreview(URL.createObjectURL(file))
   }
