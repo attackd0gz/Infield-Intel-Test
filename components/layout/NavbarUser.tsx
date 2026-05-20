@@ -101,7 +101,7 @@ export function NavbarUser() {
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+        <DropdownMenuItem onSelect={handleSignOut} className="text-destructive">
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
