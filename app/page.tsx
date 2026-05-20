@@ -46,10 +46,10 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/map">
-              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 px-8 w-full sm:w-auto">
-                <Map className="h-4 w-4 mr-2" />
+              <button className="inline-flex items-center justify-center gap-2 h-9 px-8 rounded-lg border border-white/50 text-white font-semibold text-sm hover:bg-white/10 transition-colors w-full sm:w-auto">
+                <Map className="h-4 w-4" />
                 View Map
-              </Button>
+              </button>
             </Link>
           </div>
         </div>
@@ -181,9 +181,9 @@ export default function Home() {
             Claim your listing, respond to reviews, and post renovation plans or upcoming events.
           </p>
           <Link href="/signup">
-            <Button variant="outline" className="border-white/50 text-white hover:bg-white/10 font-semibold">
+            <button className="inline-flex items-center justify-center gap-2 h-9 px-6 rounded-lg border border-white/50 text-white font-semibold text-sm hover:bg-white/10 transition-colors">
               Get a Free Owner Account
-            </Button>
+            </button>
           </Link>
         </div>
       </section>
