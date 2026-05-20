@@ -40,16 +40,17 @@ const nextConfig: NextConfig = {
         key: "Content-Security-Policy",
         value: [
           "default-src 'self'",
-          // Next.js requires unsafe-inline for its runtime scripts
-          "script-src 'self' 'unsafe-inline'",
+          // Next.js requires unsafe-inline for its runtime scripts;
+          // Google Maps JS API is loaded from maps.googleapis.com
+          "script-src 'self' 'unsafe-inline' https://maps.googleapis.com",
           // Tailwind and component inline styles
-          "style-src 'self' 'unsafe-inline'",
-          // Images from Unsplash and Supabase Storage
-          `img-src 'self' data: blob: https://images.unsplash.com https://${supabaseHost}`,
-          // Supabase REST API + realtime WebSocket
-          `connect-src 'self' https://${supabaseHost} wss://${supabaseHost}`,
-          // Self-hosted fonts (next/font downloads at build time, no CDN needed)
-          "font-src 'self' data:",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          // Images: Unsplash, Supabase, Google Maps tiles, Google user avatars
+          `img-src 'self' data: blob: https://images.unsplash.com https://${supabaseHost} https://*.googleapis.com https://*.gstatic.com https://lh3.googleusercontent.com`,
+          // API calls: Supabase + Google Maps API
+          `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.googleapis.com https://*.gstatic.com`,
+          // Fonts: self-hosted (next/font) + Google Fonts (used by Maps UI)
+          "font-src 'self' data: https://fonts.gstatic.com",
           // Disallow all framing
           "frame-ancestors 'none'",
           // Prevent base-tag hijacking
