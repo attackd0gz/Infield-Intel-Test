@@ -2,8 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Trophy, Star, Image as ImageIcon } from 'lucide-react'
+import { Trophy, Star, Image as ImageIcon, FileText, Camera, ThumbsUp, Medal } from 'lucide-react'
 import type { Profile } from '@/types'
+import { BADGE_THRESHOLDS } from '@/types'
 
 export const metadata = { title: 'Leaderboard' }
 
@@ -95,6 +96,9 @@ export default async function LeaderboardPage() {
           </div>
         )}
 
+        {/* How It Works */}
+        <HowItWorks />
+
         {/* Rest of the list */}
         {rest.length > 0 && (
           <div className="bg-white rounded-xl border overflow-hidden">
@@ -136,6 +140,109 @@ export default async function LeaderboardPage() {
             })}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+const BADGE_ORDER: BadgeLevel[] = [
+  'Rookie', 'Minor Leaguer', 'Single-A', 'Double-A', 'Triple-A',
+  'Major Leaguer', 'All-Star', 'MVP', 'Hall of Famer',
+]
+
+const BADGE_STYLES: Record<string, { pill: string; dot: string }> = {
+  'Rookie':        { pill: 'bg-zinc-100 text-zinc-600 border-zinc-200',       dot: 'bg-zinc-300' },
+  'Minor Leaguer': { pill: 'bg-zinc-100 text-zinc-600 border-zinc-200',       dot: 'bg-zinc-400' },
+  'Single-A':      { pill: 'bg-green-100 text-green-700 border-green-200',    dot: 'bg-green-500' },
+  'Double-A':      { pill: 'bg-green-100 text-green-700 border-green-200',    dot: 'bg-green-600' },
+  'Triple-A':      { pill: 'bg-blue-100 text-blue-700 border-blue-200',       dot: 'bg-blue-500' },
+  'Major Leaguer': { pill: 'bg-blue-100 text-blue-700 border-blue-200',       dot: 'bg-blue-600' },
+  'All-Star':      { pill: 'bg-purple-100 text-purple-700 border-purple-200', dot: 'bg-purple-500' },
+  'MVP':           { pill: 'bg-amber-100 text-amber-700 border-amber-200',    dot: 'bg-amber-500' },
+  'Hall of Famer': { pill: 'bg-amber-100 text-amber-700 border-amber-200',    dot: 'bg-amber-400' },
+}
+
+import type { BadgeLevel } from '@/types'
+
+function HowItWorks() {
+  return (
+    <div className="mb-10">
+      <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
+        <Trophy className="h-4 w-4 text-amber-500" />
+        How It Works
+      </h2>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* Earn points */}
+        <div className="bg-white rounded-xl border p-5">
+          <h3 className="font-semibold text-sm mb-4">Earn Points By…</h3>
+          <div className="space-y-3">
+            {[
+              {
+                icon: FileText,
+                color: 'bg-amber-50 text-amber-600',
+                label: 'Writing a review',
+                value: '15 pts',
+              },
+              {
+                icon: Camera,
+                color: 'bg-blue-50 text-blue-600',
+                label: 'Including photos in your review',
+                value: '+5 pts',
+              },
+              {
+                icon: ThumbsUp,
+                color: 'bg-green-50 text-green-600',
+                label: 'Receiving a helpful vote',
+                value: '1 pt each',
+              },
+              {
+                icon: Medal,
+                color: 'bg-purple-50 text-purple-600',
+                label: 'Being first to review a complex',
+                value: '+10 pts',
+              },
+            ].map(({ icon: Icon, color, label, value }) => (
+              <div key={label} className="flex items-center gap-3">
+                <div className={`h-9 w-9 rounded-lg ${color} flex items-center justify-center shrink-0`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <p className="text-sm flex-1">{label}</p>
+                <span className="text-sm font-bold text-primary tabular-nums">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Badge levels */}
+        <div className="bg-white rounded-xl border p-5">
+          <h3 className="font-semibold text-sm mb-4">Badge Levels</h3>
+          <div className="space-y-2">
+            {BADGE_ORDER.map((level) => {
+              const s = BADGE_STYLES[level]
+              const pts = BADGE_THRESHOLDS[level]
+              return (
+                <div key={level} className="flex items-center gap-3">
+                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border w-36 shrink-0 ${s.pill}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${s.dot}`} />
+                    {level}
+                  </span>
+                  <div className="flex-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${s.dot}`}
+                      style={{ width: `${(pts / 1000) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground tabular-nums w-16 text-right">
+                    {pts === 0 ? 'Start' : `${pts.toLocaleString()} pts`}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
       </div>
     </div>
   )

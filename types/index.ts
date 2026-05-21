@@ -112,14 +112,14 @@ export interface LeaderboardEntry {
 }
 
 export const BADGE_THRESHOLDS: Record<BadgeLevel, number> = {
-  'Rookie': 0,
-  'Minor Leaguer': 3,
-  'Single-A': 10,
-  'Double-A': 25,
-  'Triple-A': 50,
-  'Major Leaguer': 100,
-  'All-Star': 200,
-  'MVP': 500,
+  'Rookie':        0,
+  'Minor Leaguer': 15,
+  'Single-A':      50,
+  'Double-A':      100,
+  'Triple-A':      225,
+  'Major Leaguer': 375,
+  'All-Star':      550,
+  'MVP':           750,
   'Hall of Famer': 1000,
 }
 
