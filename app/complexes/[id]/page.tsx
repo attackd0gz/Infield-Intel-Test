@@ -8,7 +8,7 @@ import { ReviewList } from '@/components/reviews/ReviewList'
 import { WriteReviewButton } from '@/components/reviews/WriteReviewButton'
 import { ClaimButton } from '@/components/complexes/ClaimButton'
 import { PhotoGallery } from '@/components/complexes/PhotoGallery'
-import type { Complex } from '@/types'
+import type { Complex, ReviewPhoto } from '@/types'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -95,7 +95,7 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
 
   // Flatten all review photos into a single gallery array
   const galleryPhotos = (reviews ?? []).flatMap(r =>
-    (r.photos ?? []).map(photo => ({
+    (r.photos ?? [] as ReviewPhoto[]).map((photo: ReviewPhoto) => ({
       id:               photo.id,
       url:              photo.url,
       caption:          photo.caption,
