@@ -55,8 +55,7 @@ export function NavbarUser() {
     const supabase = createClient()
     await supabase.auth.signOut()
     setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
-    router.push('/')
-    router.refresh()
+    window.location.href = '/'
   }
 
   if (loading) return <div className="w-20 h-8 rounded bg-muted animate-pulse" />

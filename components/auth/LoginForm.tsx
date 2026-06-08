@@ -41,13 +41,14 @@ export function LoginForm() {
         .single()
 
       if (!profile?.onboarding_complete) {
-        router.push('/welcome')
+        // Full page navigation so fresh session cookies are included in the request
+        window.location.href = '/welcome'
         return
       }
     }
 
-    router.push('/')
-    router.refresh()
+    // Full page navigation so fresh session cookies are included in the request
+    window.location.href = '/'
   }
 
   async function handleGoogleLogin() {

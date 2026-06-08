@@ -66,8 +66,7 @@ export function MobileMenu() {
     await supabase.auth.signOut()
     setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
     setOpen(false)
-    router.push('/')
-    router.refresh()
+    window.location.href = '/'
   }
 
   function go(href: string) {

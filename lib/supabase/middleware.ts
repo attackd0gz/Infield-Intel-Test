@@ -30,7 +30,7 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
 
@@ -40,7 +40,10 @@ export async function updateSession(request: NextRequest) {
   const authRequired = ['/profile', '/admin', '/owner', '/complexes', '/map', '/leaderboard']
   const needsAuth = authRequired.some(p => pathname.startsWith(p))
 
-  if (needsAuth && !user) {
+  // Only redirect when we positively know there is no user.
+  // If getUser() errored (e.g. Supabase network blip), fail open so a
+  // transient auth-server timeout doesn't log out a valid session.
+  if (needsAuth && !user && !error) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
