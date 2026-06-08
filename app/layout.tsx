@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/CookieConsent";
+import { UserProvider } from "@/lib/auth/UserContext";
 import { siteUrl, defaultOgImage } from "@/lib/site";
 
 const inter = Inter({
@@ -70,11 +71,13 @@ export default function RootLayout({
       className={`${inter.variable} ${oswald.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background font-sans">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <Toaster />
-        <CookieConsent />
+        <UserProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <Toaster />
+          <CookieConsent />
+        </UserProvider>
       </body>
     </html>
   );

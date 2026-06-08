@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/lib/auth/UserContext'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -12,7 +12,6 @@ import {
   Menu, X, Search, Map, Trophy, User, Pencil,
   ShieldCheck, LogOut, LogIn, UserPlus, Star,
 } from 'lucide-react'
-import type { Profile } from '@/types'
 
 const NAV_LINKS = [
   { href: '/complexes',   label: 'Browse Complexes', icon: Search },
@@ -23,51 +22,11 @@ const NAV_LINKS = [
 export function MobileMenu() {
   const router   = useRouter()
   const pathname = usePathname()
-  const [open, setOpen]       = useState(false)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { profile, loading, signOut } = useUser()
+  const [open, setOpen] = useState(false)
 
   // Close drawer on route change
   useEffect(() => { setOpen(false) }, [pathname])
-
-  useEffect(() => {
-    const supabase = createClient()
-
-    async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('id, username, full_name, avatar_url, bio, role, badge_level, points, review_count, photo_count, helpful_votes, player_type, age_group, favorite_teams, onboarding_complete, created_at')
-          .eq('id', user.id)
-          .single()
-        setProfile(data)
-      } else {
-        setProfile(null)
-      }
-      setLoading(false)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
-        setProfile(null)
-        setLoading(false)
-      } else {
-        getUser()
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
-    setOpen(false)
-    window.location.href = '/'
-  }
 
   function go(href: string) {
     setOpen(false)
@@ -243,7 +202,7 @@ export function MobileMenu() {
         {profile && (
           <div className="mt-auto px-3 py-4">
             <button
-              onClick={handleSignOut}
+              onClick={signOut}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400/80 hover:text-red-400 hover:bg-red-400/10 transition-colors w-full text-left"
             >
               <LogOut className="h-4 w-4 shrink-0" />

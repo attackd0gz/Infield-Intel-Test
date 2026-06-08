@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/lib/auth/UserContext'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -12,59 +11,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import type { Profile } from '@/types'
 
 export function NavbarUser() {
   const router = useRouter()
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const supabase = createClient()
-
-    async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('id, username, full_name, avatar_url, bio, role, badge_level, points, review_count, photo_count, helpful_votes, player_type, age_group, favorite_teams, onboarding_complete, created_at')
-          .eq('id', user.id)
-          .single()
-        setProfile(data)
-      } else {
-        setProfile(null)
-      }
-      setLoading(false)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
-        setProfile(null)
-        setLoading(false)
-      } else {
-        getUser()
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    setProfile(null)   // clear UI immediately — don't wait for onAuthStateChange
-    window.location.href = '/'
-  }
+  const { profile, loading, signOut } = useUser()
 
   if (loading) return <div className="w-20 h-8 rounded bg-muted animate-pulse" />
 
   if (!profile) {
     return (
       <div className="flex items-center gap-2">
-        <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white" onClick={() => router.push('/login')}>Log in</Button>
-        <Button className="bg-amber-500 hover:bg-amber-400 text-black font-semibold" onClick={() => router.push('/signup')}>Sign up</Button>
+        <Button
+          variant="ghost"
+          className="text-white hover:bg-white/10 hover:text-white"
+          onClick={() => router.push('/login')}
+        >
+          Log in
+        </Button>
+        <Button
+          className="bg-amber-500 hover:bg-amber-400 text-black font-semibold"
+          onClick={() => router.push('/signup')}
+        >
+          Sign up
+        </Button>
       </div>
     )
   }
@@ -103,7 +72,7 @@ export function NavbarUser() {
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+        <DropdownMenuItem onClick={signOut} className="text-destructive">
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
