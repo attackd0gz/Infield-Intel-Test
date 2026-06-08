@@ -7,6 +7,7 @@ import { MapPin, Phone, Globe, Star } from 'lucide-react'
 import { ReviewList } from '@/components/reviews/ReviewList'
 import { WriteReviewButton } from '@/components/reviews/WriteReviewButton'
 import { ClaimButton } from '@/components/complexes/ClaimButton'
+import { PhotoGallery } from '@/components/complexes/PhotoGallery'
 import type { Complex } from '@/types'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -92,6 +93,18 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
     : { data: [] }
   const votedReviewIds = new Set((userVotes ?? []).map(v => v.review_id))
 
+  // Flatten all review photos into a single gallery array
+  const galleryPhotos = (reviews ?? []).flatMap(r =>
+    (r.photos ?? []).map(photo => ({
+      id:               photo.id,
+      url:              photo.url,
+      caption:          photo.caption,
+      reviewerName:     r.profile?.full_name ?? r.profile?.username ?? 'Anonymous',
+      reviewerUsername: r.profile?.username ?? null,
+      createdAt:        photo.created_at,
+    }))
+  )
+
   const c = complex as Complex
 
   return (
@@ -147,6 +160,9 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
       <Tabs defaultValue="reviews">
         <TabsList className="mb-6">
           <TabsTrigger value="reviews">Reviews ({c.review_count})</TabsTrigger>
+          <TabsTrigger value="photos">
+            Photos{galleryPhotos.length > 0 ? ` (${galleryPhotos.length})` : ''}
+          </TabsTrigger>
           <TabsTrigger value="info">Info & Amenities</TabsTrigger>
           {announcements && announcements.length > 0 && (
             <TabsTrigger value="updates">Owner Updates ({announcements.length})</TabsTrigger>
@@ -155,6 +171,10 @@ export default async function ComplexPage({ params }: { params: Promise<{ id: st
 
         <TabsContent value="reviews">
           <ReviewList reviews={reviews ?? []} currentUserId={user?.id ?? null} votedReviewIds={votedReviewIds} />
+        </TabsContent>
+
+        <TabsContent value="photos">
+          <PhotoGallery photos={galleryPhotos} />
         </TabsContent>
 
         <TabsContent value="info">
