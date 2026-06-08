@@ -29,7 +29,7 @@ export default async function WelcomePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <LogoIcon size={64} />
+            <LogoIcon size={128} />
           </div>
           <h1 className="text-3xl font-bold tracking-wide uppercase">
             Welcome to the dugout,{' '}

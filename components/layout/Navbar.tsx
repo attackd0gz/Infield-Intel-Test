@@ -22,7 +22,7 @@ export function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <LogoIcon size={38} />
+          <LogoIcon size={76} />
           <span
             className="hidden xs:block text-white text-xl font-bold tracking-widest uppercase"
             style={{ fontFamily: 'var(--font-oswald), sans-serif' }}

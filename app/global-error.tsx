@@ -32,7 +32,7 @@ export default function GlobalError({ error, reset }: Props) {
           padding: '2rem',
         }}
       >
-        <LogoIcon size={64} />
+        <LogoIcon size={128} />
 
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.5rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>

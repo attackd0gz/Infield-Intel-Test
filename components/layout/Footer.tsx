@@ -30,7 +30,7 @@ export function Footer() {
           {/* Brand col */}
           <div className="md:col-span-2 flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2.5 w-fit">
-              <LogoIcon size={44} />
+              <LogoIcon size={88} />
               <span
                 className="text-white text-xl font-bold tracking-widest uppercase"
                 style={{ fontFamily: 'var(--font-oswald), sans-serif' }}

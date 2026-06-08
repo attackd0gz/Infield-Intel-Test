@@ -97,7 +97,7 @@ export function MobileMenu() {
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
           >
-            <LogoIcon size={28} />
+            <LogoIcon size={56} />
             <span
               className="text-white text-sm font-bold tracking-widest uppercase"
               style={{ fontFamily: 'var(--font-oswald), sans-serif' }}

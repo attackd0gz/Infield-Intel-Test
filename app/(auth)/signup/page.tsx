@@ -33,7 +33,7 @@ export default function SignupPage() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 bg-white">
         <div className="w-full max-w-sm mx-auto">
           <Link href="/" className="flex items-center gap-2 mb-10">
-            <LogoIcon size={36} />
+            <LogoIcon size={72} />
             <span
               className="text-primary text-lg font-bold tracking-widest uppercase"
               style={{ fontFamily: 'var(--font-oswald), sans-serif' }}
